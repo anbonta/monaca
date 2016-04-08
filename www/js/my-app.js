@@ -7,7 +7,8 @@ var logo = "";
 var imgUrl = "http://stalker.europa-network.com/portal/misc/logos/120/";
 var apiKey = "UnlOMQfQN0/bn88Uw/eNB3GeiXXRzIWffRcKPyPqghaxd0kXGyWziu8MBX1epQ4Qf/tcpvkGaVlS6/AlkYAT4g==";
 var apiUrl = "http://tvapi.europa-network.com/";
-var live = false;
+var highlightBg = "#E0DEDE";
+var live = true;
 
 var data, channels, search, serial, searchResult;
 
@@ -38,6 +39,20 @@ myApp.onPageBeforeInit('*', function (page) {
                     {
                         if(response.success)
                         {
+                            
+                            var nBar = document.getElementsByClassName("navbar")[0];
+                            var fBar = document.getElementsByClassName("tabbar")[0];
+                            distX = fBar.offsetLeft - nBar.offsetLeft;
+                            distY = fBar.offsetTop - nBar.offsetTop;
+                            distance = Math.sqrt(distX*distX + distY*distY);
+                            //divHeight = ((Math.floor(distance) - nBar.style.height)-fbar.style.height);
+                            divHeight = Math.floor(distance) - (fBar.clientHeight);
+                            
+                            //alert(divHeight);
+                            //alert(nBar.clientHeight);
+                            
+                            document.getElementById('channels').style.height = divHeight + "px";
+                            
                             channels = response.data.channels;
                             data = response.data.channels;
                             
@@ -51,12 +66,12 @@ myApp.onPageBeforeInit('*', function (page) {
                                 {
                                     if(i==0)
                                     {
-                                        str = '<div class="list-block"><ul>';
+                                        str = '<div class="list-block"><ul id="channel-list">';
                                         epg = makeAccordion(channels[keys[i]].shows,channels[keys[i]].url);
                                         
                                     }
 
-                                    str += '<li id="channel-'+i+'" onclick="changeChannel(this)"><div class="item-content"><div class="item-media"><img src="' + imgUrl + channels[keys[i]].logo + '" /></div> <div class="item-inner">' + channels[keys[i]].name + '</div></div></li>';
+                                    str += '<li id="channel-'+i+'" onclick="changeChannel(this)" style="'+(i == 0 ? "background:" + highlightBg + ";" : "")+'"><div class="item-content"><div class="item-media"><img src="' + imgUrl + channels[keys[i]].logo + '" /></div> <div class="item-inner">' + channels[keys[i]].name + '</div></div></li>';
                                 
                                     if(i == (keys.length - 1))
                                     {
@@ -86,68 +101,47 @@ myApp.onPageBeforeInit('*', function (page) {
         });   
     }
     else if(page.name == "home"){}
-    else if(page.name == "catchup"){}
+    else if(page.name == "catchup")
+    {
+        document.getElementById('catchup-search-form').addEventListener("submit", catchupSearch);
+    }
 
 });
  
 function makeAccordion(epg,url)
 {
-    //console.log("AMEK AACCCORDION");
     if(epg)
     {
-        
-        
         if(url)
         {
             var str = '<div class="list-block accordion-list"><ul>';
-        
-            //console.log("EPG 1");
-            //console.log(epg);
-            //console.log(JSON.stringify(epg));
             
             for (i = 0; i < epg.length; i++)
             { 
-                //console.log("==============");
-                //console.log(JSON.stringify(epg[i]));
                 str += '<li class="accordion-item"><a href="#" class="item-link item-content"><div class="item-inner"><div class="item-title">'+epg[i].name+'</div></div></a><div class="accordion-item-content"><div class="content-block">'+epg[i].description.substring(0,70)+'</div></div></li>';
-                //epg[i].descr.substring(0,30)
             }
-            //console.log("EPG 2");
             
             str += '</ul></div>';
-            return str + '<a href="#" class="button active button-big" onclick="playStream(\'' + url + '\')">Play</a>';    
+            return str + '<a href="#" class="button active button-big" id="play-button" onclick="playStream(\'' + url + '\')">Play</a>';    
         }
         else
         {
             var str = '<div class="list-block accordion-list catchup-accordion"><ul>';
-        
-            //console.log("EPG 1");
-            //console.log(epg);
-            //console.log(JSON.stringify(epg));
             
             for (i = 0; i < epg.length; i++)
             { 
-                //console.log("==============");
-                //console.log(JSON.stringify(epg[i]));
                 str += '<li class="accordion-item"><a href="#" class="item-link item-content"><div class="item-media"><img src="'+imgUrl+epg[i].logo+'" /></div><div class="item-inner"><div class="item-title">' + epg[i].title + ' : <div class="pull-right"><strong>' + epg[i].date  + '</strong></div></div></div></a><div class="accordion-item-content"><div class="content-block">'+epg[i].description.substring(0,70 )+'<a hre="#" class="button active" onclick="playStream(\''+epg[i].url+'\')">Watch</a></div></div></li>';
-                //epg[i].descr.substring(0,30)
             }
-            //console.log("EPG 2");
-            
+        
             str += '</ul></div>';
             return str;
         }
-        
     }
     else
     {
         return false;
     }
-    
 }
-
-
-
 
 function setParams(page)
 {
@@ -162,7 +156,6 @@ function setParams(page)
             homeBg = document.getElementById("home-page");
             if (typeof(homeBg) != 'undefined' && homeBg != null)
             {
-                // exists. var div = document.getElementById('home-nav');
                 homeBg.style.background = 'url(' + customBg + ')';    
             }
         }
@@ -172,7 +165,6 @@ function setParams(page)
     var homeBar =  document.getElementById('home-nav');
     if (typeof(homeBar) != 'undefined' && homeBar != null)
     {
-        // exists. var div = document.getElementById('home-nav');
         homeBar.innerHTML = company;
     }
 }
@@ -187,6 +179,29 @@ function changeChannel(div)
         document.getElementById('epg').innerHTML = acc;
         
     }
+    
+    var channelUl = document.getElementById("channel-list");
+    var listItems = channelUl.getElementsByTagName("li");
+    
+    if (typeof(listItems) != 'undefined' && listItems != null)
+    {
+        for (i = 0; i < listItems.length; i++)
+        { 
+            if(listItems[i].id == "channel-"+id)
+            {
+                document.getElementById(listItems[i].id).style.background = "#cccccc";           
+            }
+            else
+            {
+                document.getElementById(listItems[i].id).style.background = "white";       
+            }
+        }
+    }
+    else
+    {
+        console.log("CHELEMENTSD ARE REEMPTY");
+    }
+    
 }
 
 function playStream(url)
@@ -195,7 +210,7 @@ function playStream(url)
     {
         if(live)
         {
-            window.plugin.VideoPlayer.play(url);        
+            window.plugins.vitamio.playVideo(url);       
         }
         else
         {
@@ -208,11 +223,16 @@ function playStream(url)
     }
 }
 
-
-function catchupSearch(search)
-{
+function catchupSearch(e)
+{  
+    e.preventDefault();
+    document.activeElement.blur();
+   
+    search = document.getElementById('catchup-search').value;
+    
     if(search && search.length >= 3)
     {
+        
         myApp.showIndicator();
         $$.ajax({
             type : 'GET',//
@@ -237,6 +257,16 @@ function catchupSearch(search)
                                 
                                 if(searchResult)
                                 {
+                                    
+                                    var nBar = document.getElementById("catchup-search");
+                                    var fBar = document.getElementsByClassName("tabbar")[0];
+                                    distX = fBar.offsetLeft - nBar.offsetLeft;
+                                    distY = fBar.offsetTop - nBar.offsetTop;
+                                    distance = Math.sqrt(distX*distX + distY*distY);
+                                    //alert(Math.floor(distance));
+                                    divHeight = Math.floor(distance) - (fBar.clientHeight);
+                                    document.getElementById('catchup-content').style.height = divHeight + "px";
+                                
                                     document.getElementById('catchup-content').innerHTML = searchResult;
                                 }
                             }
@@ -258,23 +288,16 @@ function catchupSearch(search)
     else
     {
         myApp.alert("Search must be at least three characters");
-    }
-    
+    }    
 }
 
-
-document.getElementById('catchup-search').addEventListener("submit", processForm);
-
-function processForm()
-{
-    alert("KLDJKLJDD");
-}
 
 function getSerial()
 {
     if(live)
     {
-        return device.serial;
+        return "520068c24b9fb000"; 
+        //return device.serial;
     }
     else
     {
