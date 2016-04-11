@@ -40,7 +40,7 @@ i.tabbar-demo-icon-4 {
 .accordion-list li {padding: 0; margin: 0px;}
 .accordion-item-content .content-block {margin: 5px 0;}
 #channels ul {list-style-type: none; padding: 0; margin: 0;}
-#channels, #catchup-content {height:230px; overflow-x: hidden; overflow-y:scroll;}
+#channels, #catchup-content {height:230px; overflow: hidden;}
 #catchup-content {height:190px; overflow: scroll;margin-top: 10px;}
 #catchup-page .searchbar {margin-top: 40px;} 
 #channels .list-block {margin: 5px; padding: 0;}
@@ -50,4 +50,3 @@ i.tabbar-demo-icon-4 {
 ::-webkit-scrollbar { 
     display: none; 
 }
-
