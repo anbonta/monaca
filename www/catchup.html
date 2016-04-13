@@ -1,5 +1,13 @@
 <div class="pages">
     <div data-page="catchup" class="page" id="catchup-page">
+    
+        <form class="searchbar searchbar-init searchbar-active" id="catchup-search-form">
+            <div class="searchbar-input">
+            <input type="search" placeholder="Search" class="" id="catchup-search"><a href="#" class="searchbar-clear"></a>
+            </div><a href="#" class="searchbar-cancel" style="display: block; margin-right: 0px;">Cancel</a>
+        </form>
+        <!--<div class="searchbar-overlay searchbar-overlay-active"></div>-->
+        
         <div class="navbar">
             <div class="navbar-inner">
                 <div class="center sliding">
@@ -13,19 +21,25 @@
             <div class="content-block-title"></div>
             
             <div class="content-block">
-                <div class="row">
-                    <div class="col-70">
-                        <input type="search" placeholder="Search" class="" id="catchup-search" style="display:block;width:100%;height:30px;">
-                    </div> 
-                    <div class="col-30">
-                        <a href="#" class="button button-fill color-cyan" onclick="catchupSearch(document.getElementById('catchup-search').value)">Search</a>
+                <!--<form id="catchup-search-form">
+                    <div class="row">
+                            <input type="search" placeholder="Search" class="" id="catchup-search" style="display:block;width:100%;height:30px;">
                     </div>
-                </div>
+                </form>-->
                 <div class="row" id="catchup-content">
                     
                 </div>
             </div>
             
         </div>
+        <!-- Bottom Tabbar-->
+        <div class="toolbar tabbar tabbar-labels">
+            <div class="toolbar-inner active">
+                <a href="home.html">Home</a>
+                <a href="tv.html">TV</a>
+                <a href="">Catchup</a>
+            </div>
+        </div>
     </div>
+    
 </div>
