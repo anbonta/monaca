@@ -341,8 +341,8 @@ function getSerial()
 {
     if(live)
     {
-        return "520068c24b9fb000";
-        //return "80cc674e"; 
+        //return "520068c24b9fb000";
+        return "80cc674e"; 
         //return device.serial;
     }
     else
@@ -366,10 +366,14 @@ function checkSerial(){
                     {
                         console.log("SUCCES AJACX");
                         console.log(response.checkSerial);
-                        if(response.checkSerial)
+                        if(response.checkSerial=='success')
                         {
                             login = 'hola',
-                            mainView.router.reloadPage('home.html');    
+                            mainView.router.reloadPage('home.html');
+                        }
+                        else if(response.checkSerial=='notconfirmation')
+                        {
+                            mainView.router.reloadPage('form-code.html');
                         }
                         else
                         {
@@ -396,8 +400,8 @@ function setFormRegistration()
          console.log(storedData.username);
          console.log(storedData.email);
          
-         var username = $$('username').val();
-         var email = $$('#email').val()
+         var username = storedData.username;
+         var email = storedData.email;
          if (!username || !email)
          {
             myApp.alert('field is empty!! ');
@@ -406,7 +410,7 @@ function setFormRegistration()
          {
               $$.ajax({
                 type : 'GET',
-                url: "https://test.europa-network.com/Customerapp/RegisterUser/key/Rqt8BxhuuDqQ4Kulo8WU/serial/"+ getSerial() + "/name/" + storedData.name + "/email/" +storedData.email ,
+                url: "https://test.europa-network.com/Customerapp/RegisterUser/key/Rqt8BxhuuDqQ4Kulo8WU/serial/"+ getSerial() + "/name/" + username + "/email/" + email ,
                 dataType : "json",
                 contentType: "application/json; charset=utf-8",
                 data: "{}",
@@ -416,6 +420,7 @@ function setFormRegistration()
                             console.log(response.createCode);
                             if(response.createCode)
                             {
+                                myApp.alert(response.createCode);
                                 mainView.router.reloadPage('form-code.html');
                             }
                             else
@@ -451,16 +456,69 @@ function setFormRegistration()
 function setFormCode()
 {    
     $$('.form-code').on('click', function() {
-    console.log('on registration!!!!!!!!!!!!');
+    console.log('on setFormCode!!!!!!!!!!!!');
       var storedData = myApp.formToJSON('#form-code');
-      if(storedData) {
-        alert(JSON.stringify(storedData));
-        mainView.router.reloadPage('home.html');
+      if(storedData) 
+      {    
+        console.log(storedData.code);
+        
+        var code = storedData.code;
+        if (!code)
+        {
+            myApp.alert('field is empty!! ');
+        }
+        else
+        {
+            $$.ajax({
+                type : 'GET',
+                url : apiCrmUrl + "ConfirmCode/serial/" + getSerial() + "/code/" + code,
+                //url: "https://test.europa-network.com/Customerapp/ConfirmCode/key/Rqt8BxhuuDqQ4Kulo8WU/serial/"+ getSerial() + "/code/" + code,
+                dataType : "json",
+                contentType: "application/json; charset=utf-8",
+                data: "{}",
+                success : function(response)
+                        {
+                            console.log("SUCCES AJACX");
+                            console.log(response.confirmCode);
+                            if(response.confirmCode=='success')
+                            {
+                                login="hola";
+                                mainView.router.reloadPage('home.html');
+                            }
+                            else
+                            {
+                                if(response.confirmCode=='wrongcode')
+                                {
+                                    myApp.alert('Wrong code try again!');
+                                    mainView.router.reloadPage('form-code.html');
+                                }
+                                else
+                                {
+                                    mainView.router.reloadPage('index.html');
+                                }
+                                
+                            }
+                        },
+                error : function(xhr, ajaxOptions, thrownError)
+                {
+                    console.log("error AJACX on registration");
+                    var login = 'bye';
+                    mainView.router.reloadPage('index.html');
+                }
+            });   
+         }    
+        
+        
+        
+        
       }
       else {
         alert('There is no stored data for this form yet. Try to change any field')
       }
     });
+    
+    
+    
      
      $$('.form-from-code-json').on('click', function(){
                           var formData = {
