@@ -32,11 +32,6 @@ $$('.form-registration').on('click', function(){
 });
 */
 
-
-
-
-
-
 // Add views
 //var view = myApp.addView('#view-1');
 setParams(false);
@@ -57,6 +52,7 @@ myApp.onPageBeforeInit('*', function (page) {
     if(login=="hola")
     if(page.name == "tv")
     {
+        console.log('&&&&&&&&&&&&&&&&&');
         myApp.showIndicator();
         $$.ajax({
             type : 'GET',//
@@ -342,8 +338,8 @@ function getSerial()
     if(live)
     {
         //return "520068c24b9fb000";
-        return "80cc674e"; 
-        //return device.serial;
+        //return "80cc674e"; 
+        return device.serial;
     }
     else
     {
@@ -357,8 +353,8 @@ function checkSerial(){
     
     $$.ajax({
             type : 'GET',//
-            //url : apiCrmUrl + "key" + apiCrmkey + "serial" + serial + "&gzip=false&json=true",
-            url: "https://test.europa-network.com/Customerapp/checkserial/key/Rqt8BxhuuDqQ4Kulo8WU/serial/"+ getSerial(),
+            url : apiCrmUrl + "checkserial/key/" + apiCrmkey + "/serial/" + getSerial(),
+            //url: "https://test.europa-network.com/Customerapp/checkserial/key/Rqt8BxhuuDqQ4Kulo8WU/serial/"+ getSerial(),
             dataType : "json",
             contentType: "application/json; charset=utf-8",
             data: "{}",
@@ -410,7 +406,8 @@ function setFormRegistration()
          {
               $$.ajax({
                 type : 'GET',
-                url: "https://test.europa-network.com/Customerapp/RegisterUser/key/Rqt8BxhuuDqQ4Kulo8WU/serial/"+ getSerial() + "/name/" + username + "/email/" + email ,
+                url : apiCrmUrl + "RegisterUser/key/" + apiCrmkey +  "/serial/" + getSerial() + "/name/" + username + "/email/" + email ,
+                //url: "https://test.europa-network.com/Customerapp/RegisterUser/key/Rqt8BxhuuDqQ4Kulo8WU/serial/"+ getSerial() + "/name/" + username + "/email/" + email ,
                 dataType : "json",
                 contentType: "application/json; charset=utf-8",
                 data: "{}",
@@ -446,7 +443,8 @@ function setFormRegistration()
      $$('.form-from-json').on('click', function(){
                           var formData = {
                             'username': 'Angel',
-                            'email': 'scottopinder88@gmail.com'
+                            'email': 'angel.b@europa-network.com'
+                            //'email': 'scottopinder88@gmail.com'
                           }
                           myApp.formFromJSON('#form-registration', formData);
                         });
@@ -455,6 +453,8 @@ function setFormRegistration()
 
 function setFormCode()
 {    
+    setFormResendCode();
+    
     $$('.form-code').on('click', function() {
     console.log('on setFormCode!!!!!!!!!!!!');
       var storedData = myApp.formToJSON('#form-code');
@@ -471,7 +471,7 @@ function setFormCode()
         {
             $$.ajax({
                 type : 'GET',
-                url : apiCrmUrl + "ConfirmCode/serial/" + getSerial() + "/code/" + code,
+                url : apiCrmUrl + "ConfirmCode/key/" + apiCrmkey +  "/serial/" + getSerial() + "/code/" + code,
                 //url: "https://test.europa-network.com/Customerapp/ConfirmCode/key/Rqt8BxhuuDqQ4Kulo8WU/serial/"+ getSerial() + "/code/" + code,
                 dataType : "json",
                 contentType: "application/json; charset=utf-8",
@@ -507,10 +507,6 @@ function setFormCode()
                 }
             });   
          }    
-        
-        
-        
-        
       }
       else {
         alert('There is no stored data for this form yet. Try to change any field')
@@ -527,4 +523,35 @@ function setFormCode()
                           myApp.formFromJSON('#form-code', formData);
                         });
       
+}
+
+
+function setFormResendCode()
+{
+     $$('.form-resendCode').on('click', function() {
+         console.log('on setFormResendCode!!!!!!!!!!!!');
+            $$.ajax({
+                type : 'GET',
+                url : apiCrmUrl + "ResendCode/key/" + apiCrmkey +  "/serial/" + getSerial() ,
+                //url: "https://test.europa-network.com/Customerapp/ConfirmCode/key/Rqt8BxhuuDqQ4Kulo8WU/serial/"+ getSerial() + "/code/" + code,
+                dataType : "json",
+                contentType: "application/json; charset=utf-8",
+                data: "{}",
+                success : function(response)
+                        {
+                            //mainView.router.reloadPage('form-code.html');
+                            myApp.Alert('Check you email');
+                               
+                        },
+                error : function(xhr, ajaxOptions, thrownError)
+                {
+                    console.log("error AJACX on registration");
+                    var login = 'bye';
+                    mainView.router.reloadPage('index.html');
+                }
+            });   
+             
+     
+    });
+    
 }
